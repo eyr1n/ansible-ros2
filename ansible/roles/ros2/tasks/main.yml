@@ -1,0 +1,34 @@
+---
+- name: Set locale
+  when: "'UTF-8' not in lookup('env', 'LANG')"
+  become: yes
+  block:
+  - ansible.builtin.apt:
+      update_cache: yes
+      pkg:
+      - locales
+      - software-properties-common
+  - community.general.locale_gen: 
+      name: en_US.UTF-8
+  - shell: update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+  - shell: add-apt-repository universe
+
+- name: Setup Sources
+  become: yes
+  block:
+  - ansible.builtin.apt_key:
+      url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key
+      keyring: /usr/share/keyrings/ros-archive-keyring.gpg
+  - ansible.builtin.apt_repository:
+      repo: deb [arch={{ ansible_architecture }} signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu {{ ansible_distribution_release }} main
+    
+- name: Install ROS 2 Foxy
+  become: yes
+  block:
+  - ansible.builtin.apt:
+      update_cache: yes
+      upgrade: yes
+  - ansible.builtin.apt:
+      pkg:
+      - ros-foxy-desktop
+      - python3-argcomplete
