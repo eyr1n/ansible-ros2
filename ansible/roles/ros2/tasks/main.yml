@@ -20,9 +20,7 @@
       url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key
       keyring: /usr/share/keyrings/ros-archive-keyring.gpg
   - ansible.builtin.apt_repository:
-      repo: deb [arch={{ ansible_architecture }} signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu {{ ansible_distribution_release }} main
-  - debug:
-      msg: "deb [arch={{ ansible_architecture }} signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu {{ ansible_distribution_release }} main"
+      repo: deb [arch=amd64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu {{ ansible_distribution_release }} main
     
 - name: Install ROS 2 Foxy
   become: yes
