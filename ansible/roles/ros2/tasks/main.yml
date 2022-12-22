@@ -1,42 +1,50 @@
 ---
 - name: Set locale
-  #when: "'UTF-8' not in lookup('env', 'LANG')"
+  when: "'UTF-8' not in lookup('env', 'LANG')"
   become: yes
   block:
-  - ansible.builtin.apt:
+  - name: apt install locales
+    ansible.builtin.apt:
       update_cache: yes
       name: locales
-  - community.general.locale_gen: 
+  - name: locale-gen
+    community.general.locale_gen: 
       name: en_US.UTF-8
-  - ansible.builtin.shell: update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-  - ansible.builtin.shell: export LANG=en_US.UTF-8
+  - name: update-locale
+    ansible.builtin.shell: update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 
 - name: Add universe repo
   become: yes
   block:
-  - ansible.builtin.apt:
+  - name: apt install software-properties-common
+    ansible.builtin.apt:
       update_cache: yes
       name: software-properties-common
-  - ansible.builtin.shell: add-apt-repository universe
-  - debug:
-      msg: "{{ lookup('env', 'LANG') }}"
+  - name: add-apt-repository universe
+    ansible.builtin.shell: add-apt-repository universe
 
 - name: Add ROS2 repo
   become: yes
   block:
-  - ansible.builtin.apt_key:
+  - name: add apt key
+    ansible.builtin.apt_key:
       url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key
       keyring: /usr/share/keyrings/ros-archive-keyring.gpg
-  - ansible.builtin.apt_repository:
+  - name: add apt repository
+    ansible.builtin.apt_repository:
       repo: deb [arch=amd64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu {{ ansible_distribution_release }} main
     
 - name: Install ROS2 Foxy
   become: yes
+  environment:
+    LANG: "{{ 'en_US.UTF-8' if 'UTF-8' not in lookup('env', 'LANG') else lookup('env', 'LANG') }}"
   block:
-  - ansible.builtin.apt:
+  - name: apt upgrade
+    ansible.builtin.apt:
       update_cache: yes
       upgrade: yes
-  - ansible.builtin.apt:
+  - name: apt install ros2
+    ansible.builtin.apt:
       pkg:
       - ros-foxy-desktop
       - python3-argcomplete
