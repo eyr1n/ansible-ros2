@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Ansible
+        run: |
+          sudo apt install software-properties-common
+          sudo apt-add-repository --yes --update ppa:ansible/ansible
+          sudo apt install ansible
+
+      - name: Run Ansible-Playbook
+        run: ansible-playbook ansible/site.yml
