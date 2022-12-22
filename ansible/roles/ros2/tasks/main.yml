@@ -9,6 +9,7 @@
   - community.general.locale_gen: 
       name: en_US.UTF-8
   - ansible.builtin.shell: update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+  - ansible.builtin.shell: export LANG=en_US.UTF-8
 
 - name: Add universe repo
   become: yes
