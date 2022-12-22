@@ -1,49 +1,33 @@
 ---
-- name: Set locale
-  when: "'UTF-8' not in lookup('env', 'LANG')"
+- name: Add Ubuntu Universe repo
   become: yes
   block:
-  - name: apt install locales
-    ansible.builtin.apt:
-      update_cache: yes
-      name: locales
-  - name: locale-gen
-    community.general.locale_gen: 
-      name: en_US.UTF-8
-  - name: update-locale
-    ansible.builtin.shell: update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-
-- name: Add universe repo
-  become: yes
-  block:
-  - name: apt install software-properties-common
+  - name: Install software-properties-common
     ansible.builtin.apt:
       update_cache: yes
       name: software-properties-common
-  - name: add-apt-repository universe
+  - name: Add repo
     ansible.builtin.shell: add-apt-repository universe
 
 - name: Add ROS2 repo
   become: yes
   block:
-  - name: add apt key
+  - name: Add key
     ansible.builtin.apt_key:
       url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key
       keyring: /usr/share/keyrings/ros-archive-keyring.gpg
-  - name: add apt repository
+  - name: Add repo
     ansible.builtin.apt_repository:
       repo: deb [arch=amd64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu {{ ansible_distribution_release }} main
-    
+
 - name: Install ROS2 Foxy
   become: yes
-  environment:
-    LANG: "{{ 'en_US.UTF-8' if 'UTF-8' not in lookup('env', 'LANG') else lookup('env', 'LANG') }}"
   block:
-  - name: apt upgrade
+  - name: Upgrade packages
     ansible.builtin.apt:
       update_cache: yes
       upgrade: yes
-  - name: apt install ros2
+  - name: Install ROS2 packages
     ansible.builtin.apt:
       pkg:
       - ros-foxy-desktop
