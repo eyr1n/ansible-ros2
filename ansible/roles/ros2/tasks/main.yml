@@ -5,19 +5,19 @@
   block:
   - ansible.builtin.apt:
       update_cache: yes
-      pkg:
-      - locales
+      name: locales
   - community.general.locale_gen: 
       name: en_US.UTF-8
   - shell: update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+  - environment:
+      LANG: en_US.UTF-8
 
 - name: Add universe repo
   become: yes
   block:
   - ansible.builtin.apt:
       update_cache: yes
-      pkg:
-      - software-properties-common
+      name: software-properties-common
   - shell: add-apt-repository universe
 
 - name: Setup Sources
