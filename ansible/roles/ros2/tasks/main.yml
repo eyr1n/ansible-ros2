@@ -7,15 +7,18 @@
       update_cache: yes
       pkg:
       - locales
-      - software-properties-common
   - community.general.locale_gen: 
       name: en_US.UTF-8
   - shell: update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-  - shell: add-apt-repository universe
 
 - name: Setup Sources
   become: yes
   block:
+  - ansible.builtin.apt:
+      update_cache: yes
+      pkg:
+      - software-properties-common
+  - shell: add-apt-repository universe
   - ansible.builtin.apt_key:
       url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key
       keyring: /usr/share/keyrings/ros-archive-keyring.gpg
